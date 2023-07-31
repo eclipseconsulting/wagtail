@@ -12,6 +12,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RemoveIndex(
+            model_name="revision",
+            name="content_object_idx",
+        ),
+        migrations.RemoveIndex(
+            model_name="revision",
+            name="base_content_object_idx",
+        ),
         migrations.AlterField(
             model_name="revision",
             name="content_type",
@@ -28,6 +36,20 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.CASCADE,
                 to="contenttypes.contenttype",
                 related_name="+",
+            ),
+        ),
+        migrations.AddIndex(
+            model_name="revision",
+            index=models.Index(
+                fields=["content_type", "object_id"],
+                name="content_object_idx",
+            ),
+        ),
+        migrations.AddIndex(
+            model_name="revision",
+            index=models.Index(
+                fields=["base_content_type", "object_id"],
+                name="base_content_object_idx",
             ),
         ),
     ]
