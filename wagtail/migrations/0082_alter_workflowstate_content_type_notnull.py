@@ -12,6 +12,18 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RemoveConstraint(
+            model_name="workflowstate",
+            name="unique_in_progress_workflow",
+        ),
+        migrations.RemoveIndex(
+            model_name="WorkflowState",
+            name="workflowstate_ct_id_idx",
+        ),
+        migrations.RemoveIndex(
+            model_name="WorkflowState",
+            name="workflowstate_base_ct_id_idx",
+        ),
         migrations.AlterField(
             model_name="workflowstate",
             name="base_content_type",
@@ -28,6 +40,28 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name="+",
                 to="contenttypes.contenttype",
+            ),
+        ),
+        migrations.AddConstraint(
+            model_name="workflowstate",
+            constraint=models.UniqueConstraint(
+                condition=models.Q(("status__in", ("in_progress", "needs_changes"))),
+                fields=("base_content_type", "object_id"),
+                name="unique_in_progress_workflow",
+            ),
+        ),
+        migrations.AddIndex(
+            model_name="WorkflowState",
+            index=models.Index(
+                fields=["content_type", "object_id"],
+                name="workflowstate_ct_id_idx",
+            ),
+        ),
+        migrations.AddIndex(
+            model_name="WorkflowState",
+            index=models.Index(
+                fields=["base_content_type", "object_id"],
+                name="workflowstate_base_ct_id_idx",
             ),
         ),
     ]
