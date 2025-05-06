@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("auth", "0012_alter_user_first_name_max_length"),
         ("wagtailcore", "0089_log_entry_data_json_null_to_object"),
@@ -24,6 +23,11 @@ class Migration(migrations.Migration):
             model_name="grouppagepermission",
             name="permission_type",
         ),
+        # Removing and adding back this constraint to cope with shortcomings of the mssql-django driver
+        migrations.RemoveConstraint(
+            model_name="grouppagepermission",
+            name="unique_permission",
+        ),
         migrations.AlterField(
             model_name="grouppagepermission",
             name="permission",
@@ -31,6 +35,13 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.CASCADE,
                 to="auth.permission",
                 verbose_name="permission",
+            ),
+        ),
+        migrations.AddConstraint(
+            model_name="grouppagepermission",
+            constraint=models.UniqueConstraint(
+                fields=("group", "page", "permission"),
+                name="unique_permission",
             ),
         ),
     ]
